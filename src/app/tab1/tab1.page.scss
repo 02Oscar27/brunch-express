@@ -1,0 +1,30 @@
+.presentacion {
+    text-align: center;
+    margin: 24px 8px;
+}
+
+.presentacion h1 {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.presentacion p {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.5;
+}
+
+ion-card {
+    margin: 18px 0;
+    border-radius: 14px;
+}
+
+ion-card-content p {
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+ion-button {
+    --border-radius: 10px;
+}

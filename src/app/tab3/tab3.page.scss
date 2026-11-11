@@ -1,0 +1,44 @@
+.carrito-vacio {
+    text-align: center;
+    margin-top: 60px;
+}
+
+.carrito-vacio p {
+    color: #666;
+    margin-bottom: 24px;
+}
+
+ion-card {
+    margin: 16px 0;
+    border-radius: 12px;
+}
+
+ion-card-content p {
+    margin-bottom: 12px;
+}
+
+.cantidad {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 16px 0;
+}
+
+.cantidad span {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.resumen {
+    margin-top: 24px;
+    padding: 16px;
+    border-top: 1px solid;
+}
+
+
+.resumen h2 {
+    color: #27804a;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}

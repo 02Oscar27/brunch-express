@@ -1,0 +1,7 @@
+{
+  "name": "brunch-express",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
