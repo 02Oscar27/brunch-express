@@ -1,4 +1,8 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  inject,
+  ChangeDetectorRef
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
@@ -11,14 +15,12 @@ import {
   IonCardTitle,
   IonCardContent,
   IonButton,
-  AlertController,
-  ToastController,
   IonInput,
+  AlertController,
+  ToastController
 } from '@ionic/angular';
 
 import { CarritoService } from '../services/carrito.service';
-import { PedidosService } from '../services/pedidos.service';
-import type { Pedido } from '../services/pedidos.service';
 
 @Component({
   selector: 'app-tab3',
@@ -34,117 +36,116 @@ import type { Pedido } from '../services/pedidos.service';
     IonCardTitle,
     IonCardContent,
     IonButton,
-    RouterLink,
     IonInput,
     FormsModule,
-  ],
+    RouterLink
+  ]
 })
 export class Tab3Page {
-  readonly carrito = inject(CarritoService);
-  readonly pedidos = inject(PedidosService);
 
-  private readonly cdr = inject(ChangeDetectorRef);
+  readonly carrito = inject(CarritoService);
+
   private readonly alertCtrl = inject(AlertController);
   private readonly toastCtrl = inject(ToastController);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   nombreCliente: string = '';
 
+  // Aumentar cantidad
   aumentar(id: number): void {
     this.carrito.aumentarCantidad(id);
   }
 
+  // Disminuir cantidad
   disminuir(id: number): void {
     this.carrito.disminuirCantidad(id);
   }
 
+  // Eliminar producto
   eliminar(id: number): void {
     this.carrito.eliminarProducto(id);
   }
 
+  // Vaciar carrito
   vaciar(): void {
     this.carrito.vaciarCarrito();
   }
 
-  // Ionic conserva las pestañas: actualizar sus datos al volver a entrar.
-  ionViewWillEnter(): void {
-    this.cdr.markForCheck();
-  }
-
+  // Formatear precios
   formatearPrecio(precio: number): string {
     return '$' + precio.toLocaleString('es-CO');
   }
 
+  // Confirmar pedido
   async confirmarPedido(): Promise<void> {
+
     const nombre = this.nombreCliente.trim();
 
-    // Validar que existan productos
+    // Validar el carrito
     if (this.carrito.obtenerCantidadTotal() === 0) {
       await this.mostrarMensaje('El carrito está vacío');
       return;
     }
 
-    // Validar el nombre del cliente
+    // Validar el nombre
     if (nombre.length < 3) {
-      await this.mostrarMensaje('Ingresa un nombre de al menos 3 caracteres');
+      await this.mostrarMensaje(
+        'Ingresa un nombre de al menos 3 caracteres'
+      );
       return;
     }
 
-    // Crear el pedido con sus datos
-    const pedido: Pedido = {
-      id: Date.now(),
-      cliente: nombre,
-      fecha: new Date().toISOString(),
-      productos: this.carrito.obtenerProductos(),
-      total: this.carrito.obtenerTotal(),
-    };
+    // Calcular el total
+    const total = this.carrito.obtenerTotal();
 
-    // Mostrar confirmación
+    // Crear la ventana de confirmación
     const alerta = await this.alertCtrl.create({
       header: 'Confirmar pedido',
-      message: `Cliente: ${nombre}. Total: ${this.formatearPrecio(pedido.total)}`,
+      message: `Cliente: ${nombre}. Total: ${this.formatearPrecio(total)}`,
       buttons: [
         {
           text: 'Cancelar',
-          role: 'cancel',
+          role: 'cancel'
         },
         {
           text: 'Confirmar',
-          role: 'confirm',
-        },
-      ],
+          role: 'confirm'
+        }
+      ]
     });
 
     await alerta.present();
 
     const resultado = await alerta.onDidDismiss();
 
-    // Si cancela, no guardar nada
+    // Comprobar si el usuario confirmó
     if (resultado.role !== 'confirm') {
       return;
     }
 
-    try {
-      await this.pedidos.guardarPedido(pedido);
+    // Limpiar el carrito
+    this.carrito.vaciarCarrito();
+    this.nombreCliente = '';
 
-      this.carrito.vaciarCarrito();
-      this.nombreCliente = '';
+    // Actualizar la pantalla
+    this.cdr.detectChanges();
 
-      // Solicitar a Angular actualizar la pantalla
-      this.cdr.markForCheck();
-
-      await this.mostrarMensaje('Pedido guardado correctamente');
-    } catch {
-      await this.mostrarMensaje('No fue posible guardar el pedido');
-    }
+    // Mostrar mensaje
+    await this.mostrarMensaje(
+      'Pedido confirmado correctamente'
+    );
   }
 
+  // Mostrar notificaciones
   async mostrarMensaje(mensaje: string): Promise<void> {
+
     const toast = await this.toastCtrl.create({
       message: mensaje,
       duration: 2500,
-      position: 'bottom',
+      position: 'bottom'
     });
 
     await toast.present();
   }
+
 }
